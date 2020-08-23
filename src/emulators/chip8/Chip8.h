@@ -10,24 +10,31 @@
 #include <SFML/Audio/Sound.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Config.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
 #include <array>
 #include <cmath>
+#include <fstream>
+#include <stack>
+#include <string>
 #include <vector>
 
+#include "../../components/EmulatorView.h"
 #include "Disasm.h"
-#include "VM.h"
 
 namespace Emuze::Chip8 {
-class Chip8 {
+using sf::Uint8, sf::Uint16, sf::Uint32;
+
+constexpr std::size_t MemSize = 0x1000;
+
+class Chip8 final : public EmulatorView {
    private:
     class Chip8Sound final {
        private:
         static constexpr unsigned SAMPLE_RATE = 44100;
         static constexpr unsigned AMPLITUDE = 30000;
         static constexpr unsigned SAMPLES = 44100;
-        std::vector<sf::Int16> samples{};
 
-        void initSound();
+        void initSound(const sf::Int16* first);
         sf::Sound sound;
         sf::SoundBuffer buffer;
 
@@ -43,9 +50,49 @@ class Chip8 {
         inline void stop() { sound.stop(); }
     };
     Chip8Sound sound{};
-    VM vm;
+
+    std::array<Uint8, MemSize> memory{};
+    std::array<Uint8, 16> V{};
+    std::array<Uint8, 0x100> video{};
+    std::stack<Uint16> c8stack{};
+    Uint32 SP = 0;
+    Uint32 base = 0x200;
+    Uint16 PC = base;
+    std::size_t romSize = 0;
+    Uint32 I = 0;
+    Uint8 pressedKey = 0;
+    Uint8 waitingX = 0xF;
+    std::size_t DT = 0;
+    std::size_t ST = 0;
+    std::size_t clock = 0;
 
    public:
+    explicit Chip8();
+    void inline setPressedKey(Uint8);
+    void reset();
+    void openRom(std::string file);
+    void step();
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 };
+
+static const constinit std::array<const std::array<Uint8, 5>, 16> digits{{
+    {0b11110000, 0b10010000, 0b10010000, 0b10010000, 0b11110000},
+    {0b00100000, 0b01100000, 0b00100000, 0b00100000, 0b01110000},
+    {0b11110000, 0b00010000, 0b11110000, 0b10000000, 0b11110000},
+    {0b11110000, 0b00010000, 0b11110000, 0b00010000, 0b11110000},
+    {0b10010000, 0b10010000, 0b11110000, 0b00010000, 0b00010000},
+    {0b11110000, 0b10000000, 0b11110000, 0b00010000, 0b11110000},
+    {0b11110000, 0b10000000, 0b11110000, 0b10010000, 0b11110000},
+    {0b11110000, 0b00010000, 0b00100000, 0b01000000, 0b01000000},
+    {0b11110000, 0b10010000, 0b11110000, 0b10010000, 0b11110000},
+    {0b11110000, 0b10010000, 0b11110000, 0b00010000, 0b11110000},
+    {0b11110000, 0b10010000, 0b11110000, 0b10010000, 0b10010000},
+    {0b11100000, 0b10010000, 0b11100000, 0b10010000, 0b11100000},
+    {0b11110000, 0b10000000, 0b10000000, 0b10000000, 0b11110000},
+    {0b11100000, 0b10010000, 0b10010000, 0b10010000, 0b11100000},
+    {0b11110000, 0b10000000, 0b11110000, 0b10000000, 0b11110000},
+    {0b11110000, 0b10000000, 0b11110000, 0b10000000, 0b10000000},
+}};
+
 }  // namespace Emuze::Chip8
 #endif  // EMUZE_CHIP8_H

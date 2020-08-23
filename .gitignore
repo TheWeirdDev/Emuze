@@ -1,7 +1,15 @@
 build/
 .vscode/
+.idea/
+cmake-build-debug/
+CMakeFiles/
+cmake_*
 *.o
 *.a
 *.out
 *.so
 games/
+Emuze
+Emuze.*
+Makefile
+CMakeCache.txt

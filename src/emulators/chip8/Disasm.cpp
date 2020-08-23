@@ -13,8 +13,9 @@ void Disasm::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(r, states);
 }
 
-std::string Disasm::disassemble(sf::Uint16 inst) {
+std::string Disasm::disassemble(sf::Uint16 inst, std::size_t i) {
     using sf::Uint8, sf::Uint16;
+    using namespace std::string_literals;
     // 12-bit literal Address
     const Uint16 a = inst & 0xfffU;
 
@@ -28,159 +29,159 @@ std::string Disasm::disassemble(sf::Uint16 inst) {
 
     //std::return a << b << n << x << y << '\n';
     if (inst == CLS) {
-        return fmt::format("{} - CLS", inst);
+        return fmt::format("{:04x} - CLS", i);
     }
     if (inst == RET) {
-        return fmt::format("{} - RET", inst);
+        return fmt::format("{:04x} - RET", i);
     }
     /*
     if (inst == LOW) {
-        return fmt::format("{} - LOW", inst);
+        return fmt::format("{:04x} - LOW", i);
     }
     if (inst == HIGH) {
-        return fmt::format("{} - HIGH", inst);
+        return fmt::format("{:04x} - HIGH", i);
     }
     if (inst == SCR) {
-        return fmt::format("{} - SCR", inst);
+        return fmt::format("{:04x} - SCR", i);
     }
     if (inst == SCL) {
-        return fmt::format("{} - SCL", inst);
+        return fmt::format("{:04x} - SCL", i);
     }
     if (inst == EXIT) {
-        return fmt::format("{} - EXIT", inst);
+        return fmt::format("{:04x} - EXIT", i);
     }
     if ((inst & 0xFFF0) == 0x00B0) {
-        return fmt::format("{} - SCU    {}", inst, n);
+        return fmt::format("{:04x} - SCU    {}", i, n);
     }
     if (((inst & 0xFFF0)) == 0x00C0) {
-        return fmt::format("{} - SCD    {}", inst, n);
+        return fmt::format("{:04x} - SCD    {}", i, n);
     }*/
     if ((inst & INST_F000) == SYS) {
-        return fmt::format("{} - SYS    #{}", inst, a);
+        return fmt::format("{:04x} - SYS    #{}", i, a);
     }
     if ((inst & INST_F000) == JP_X) {
-        return fmt::format("{} - JP     #{}", inst, a);
+        return fmt::format("{:04x} - JP     #{:04x}", i, a);
     }
     if ((inst & INST_F000) == CALL) {
-        return fmt::format("{} - CALL   #{}", inst, a);
+        return fmt::format("{:04x} - CALL   #{:04x}", i, a);
     }
     if ((inst & INST_F000) == SE_VX) {
-        return fmt::format("{} - SE     V{}, #{}", inst, x, b);
+        return fmt::format("{:04x} - SE     V{}, #{}", i, x, b);
     }
     if ((inst & INST_F000) == SNE_VX) {
-        return fmt::format("{} - SNE    V{}, #{}", inst, x, b);
+        return fmt::format("{:04x} - SNE    V{}, #{}", i, x, b);
     }
     if ((inst & INST_F00F) == SE_VV) {
-        return fmt::format("{} - SE     V{}, V{}", inst, x, y);
+        return fmt::format("{:04x} - SE     V{}, V{}", i, x, y);
     }
     if ((inst & INST_F00F) == SGT) {
-        return fmt::format("{} - SGT    V{}, V{}", inst, x, y);
+        return fmt::format("{:04x} - SGT    V{}, V{}", i, x, y);
     }
     if ((inst & INST_F00F) == SLT) {
-        return fmt::format("{} - SLT    V{}, V{}", inst, x, y);
+        return fmt::format("{:04x} - SLT    V{}, V{}", i, x, y);
     }
     if ((inst & INST_F000) == LD_VX) {
-        return fmt::format("{} - LD     V{}, #{}", inst, x, b);
+        return fmt::format("{:04x} - LD     V{}, #{}", i, x, b);
     }
     if ((inst & INST_F000) == ADD_VX) {
-        return fmt::format("{} - ADD    V{}, #{}", inst, x, b);
+        return fmt::format("{:04x} - ADD    V{}, #{}", i, x, b);
     }
     if ((inst & INST_F00F) == LD_VV) {
-        return fmt::format("{} - LD     V{}, V{}", inst, x, y);
+        return fmt::format("{:04x} - LD     V{}, V{}", i, x, y);
     }
     if ((inst & INST_F00F) == OR) {
-        return fmt::format("{} - OR     V{}, V{}", inst, x, y);
+        return fmt::format("{:04x} - OR     V{}, V{}", i, x, y);
     }
     if ((inst & INST_F00F) == AND) {
-        return fmt::format("{} - AND    V{}, V{}", inst, x, y);
+        return fmt::format("{:04x} - AND    V{}, V{}", i, x, y);
     }
     if ((inst & INST_F00F) == XOR) {
-        return fmt::format("{} - XOR    V{}, V{}", inst, x, y);
+        return fmt::format("{:04x} - XOR    V{}, V{}", i, x, y);
     }
     if ((inst & INST_F00F) == ADD_VV) {
-        return fmt::format("{} - ADD    V{}, V{}", inst, x, y);
+        return fmt::format("{:04x} - ADD    V{}, V{}", i, x, y);
     }
     if ((inst & INST_F00F) == SUB) {
-        return fmt::format("{} - SUB    V{}, V{}", inst, x, y);
+        return fmt::format("{:04x} - SUB    V{}, V{}", i, x, y);
     }
     if ((inst & INST_F00F) == SHR) {
-        return fmt::format("{} - SHR    V{}", inst, x);
+        return fmt::format("{:04x} - SHR    V{}", i, x);
     }
     if ((inst & INST_F00F) == SUBN) {
-        return fmt::format("{} - SUBN   V{}, V{}", inst, x, y);
+        return fmt::format("{:04x} - SUBN   V{}, V{}", i, x, y);
     }
     if ((inst & INST_F00F) == SHL) {
-        return fmt::format("{} - SHL    V{}", inst, x);
+        return fmt::format("{:04x} - SHL    V{}", i, x);
     }
     if ((inst & INST_F00F) == SNE_VV) {
-        return fmt::format("{} - SNE    V{}, V{}", inst, x, y);
+        return fmt::format("{:04x} - SNE    V{}, V{}", i, x, y);
     }
     if ((inst & INST_F00F) == MUL) {
-        return fmt::format("{} - MUL    V{}, V{}", inst, x, y);
+        return fmt::format("{:04x} - MUL    V{}, V{}", i, x, y);
     }
     if ((inst & INST_F00F) == DIV) {
-        return fmt::format("{} - DIV    V{}, V{}", inst, x, y);
+        return fmt::format("{:04x} - DIV    V{}, V{}", i, x, y);
     }
     if ((inst & INST_F00F) == BCD_VV) {
-        return fmt::format("{} - BCD    V{}, V{}", inst, x, y);
+        return fmt::format("{:04x} - BCD    V{}, V{}", i, x, y);
     }
     if ((inst & INST_F000) == LD_IX) {
-        return fmt::format("{} - LD     I, #{}", inst, a);
+        return fmt::format("{:04x} - LD     I, #{}", i, a);
     }
     if ((inst & INST_F000) == JP_V0X) {
-        return fmt::format("{} - JP     V0, #{}", inst, a);
+        return fmt::format("{:04x} - JP     V0, #{}", i, a);
     }
     if ((inst & INST_F000) == RND) {
-        return fmt::format("{} - RND    V{}, #{}", inst, x, b);
+        return fmt::format("{:04x} - RND    V{}, #{}", i, x, b);
     }
     if ((inst & INST_F000) == DRW) {
-        return fmt::format("{} - DRW    V{}, V{}, {}", inst, x, y, n);
+        return fmt::format("{:04x} - DRW    V{}, V{}, {}", i, x, y, n);
     }
     if ((inst & INST_F0FF) == SKP) {
-        return fmt::format("{} - SKP    V{}", inst, x);
+        return fmt::format("{:04x} - SKP    V{}", i, x);
     }
     if ((inst & INST_F0FF) == SKNP) {
-        return fmt::format("{} - SKNP   V{}", inst, x);
+        return fmt::format("{:04x} - SKNP   V{}", i, x);
     }
     if ((inst & INST_F0FF) == LD_VDT) {
-        return fmt::format("{} - LD     V{}, DT", inst, x);
+        return fmt::format("{:04x} - LD     V{}, DT", i, x);
     }
     if ((inst & INST_F0FF) == LD_VK) {
-        return fmt::format("{} - LD     V{}, K", inst, x);
+        return fmt::format("{:04x} - LD     V{}, K", i, x);
     }
     if ((inst & INST_F0FF) == LD_DTV) {
-        return fmt::format("{} - LD     DT, V{}", inst, x);
+        return fmt::format("{:04x} - LD     DT, V{}", i, x);
     }
     if ((inst & INST_F0FF) == LD_STV) {
-        return fmt::format("{} - LD     ST, V{}", inst, x);
+        return fmt::format("{:04x} - LD     ST, V{}", i, x);
     }
     if ((inst & INST_F0FF) == ADD_IV) {
-        return fmt::format("{} - ADD    I, V{}", inst, x);
+        return fmt::format("{:04x} - ADD    I, V{}", i, x);
     }
     if ((inst & INST_F0FF) == LD_FV) {
-        return fmt::format("{} - LD     F, V{}", inst, x);
+        return fmt::format("{:04x} - LD     F, V{}", i, x);
     }
     // if ((inst & INST_F0FF) == 0xF030) {
-    //     return fmt::format("{} - LD     HF, V{}", inst, x);
+    //     return fmt::format("{:04x} - LD     HF, V{}", i, x);
     // }
     if ((inst & INST_F0FF) == BCD_V) {
-        return fmt::format("{} - BCD    V{}", inst, x);
+        return fmt::format("{:04x} - BCD    V{}", i, x);
     }
     if ((inst & INST_F0FF) == LD_MEMI_V) {
-        return fmt::format("{} - LD     [I], V{}", inst, x);
+        return fmt::format("{:04x} - LD     [I], V{}", i, x);
     }
     if ((inst & INST_F0FF) == LD_V_MEMI) {
-        return fmt::format("{} - LD     V{}, [I]", inst, x);
+        return fmt::format("{:04x} - LD     V{}, [I]", i, x);
     }
     // if ((inst & INST_F0FF) == 0xF075) {
-    //     return fmt::format("{} - LD     R, V{}", inst, x);
+    //     return fmt::format("{:04x} - LD     R, V{}", i, x);
     // }
     // if ((inst & INST_F0FF) == 0xF085) {
-    //     return fmt::format("{} - LD     V{}, R", inst, x);
+    //     return fmt::format("{:04x} - LD     V{}, R", i, x);
     // }
     if ((inst & INST_F0FF) == LD_AV) {
-        return fmt::format("{} - LD     A, V{}", inst, x);
+        return fmt::format("{:04x} - LD     A, V{}", i, x);
     }
-    return "INVALID";
+    return "INVALID"s;
 }
 }  // namespace Emuze::Chip8

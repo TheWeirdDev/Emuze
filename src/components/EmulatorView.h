@@ -4,11 +4,12 @@
 
 #ifndef EMUZE_EMULATORVIEW_H
 #define EMUZE_EMULATORVIEW_H
+#include <SFML/Graphics/Drawable.hpp>
 
-
-class EmulatorView {
-
+class EmulatorView : public sf::Drawable {
+   protected:
+    void draw(sf::RenderTarget &target,
+              sf::RenderStates states) const override = 0;
 };
 
-
-#endif //EMUZE_EMULATORVIEW_H
+#endif  // EMUZE_EMULATORVIEW_H
