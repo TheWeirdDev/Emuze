@@ -5,6 +5,7 @@
 #include "Chip8.h"
 
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <map>
 
 namespace Emuze::Chip8 {
 
@@ -41,7 +42,7 @@ void Chip8::Chip8Sound::initSound(const sf::Int16* first) {
 
 Chip8::Chip8Sound::~Chip8Sound() { sound.stop(); }
 
-void Chip8::openRom(std::string file) {
+void Chip8::openRom(const std::string& file) {
     reset();
     std::ifstream in_file(file, std::ios::in | std::ios::binary);
     // Disasm disasm;
@@ -71,27 +72,52 @@ void Chip8::openRom(std::string file) {
 void Chip8::reset() {
     // memory.fill(0);
     V.fill(0);
-    video.fill(0);
+    for (auto& i : video) i.fill(false);
     std::stack<Uint16>().swap(c8stack);
 
-    waitingX = 0xF;
+    waitingX = 0x10;
     romSize = 0;
     SP = I = 0;
     PC = base;
     DT = ST = clock = 0;
 }
 
-void inline Chip8::setPressedKey(Uint8 keyCode) {
-    if (waitingX != 0xF) {
-        waitingX = 0xF;
-        V[waitingX] = keyCode;
+void Chip8::setPressedKey(sf::Keyboard::Key keyCode) {
+    static const std::map<sf::Keyboard::Key, Uint8> keys{
+        {sf::Keyboard::X, 0},     {sf::Keyboard::Num1, 1},
+        {sf::Keyboard::Num2, 2},  {sf::Keyboard::Num3, 3},
+        {sf::Keyboard::Q, 4},     {sf::Keyboard::W, 5},
+        {sf::Keyboard::E, 6},     {sf::Keyboard::A, 7},
+        {sf::Keyboard::S, 8},     {sf::Keyboard::D, 9},
+        {sf::Keyboard::Z, 10},    {sf::Keyboard::C, 11},
+        {sf::Keyboard::Num4, 12}, {sf::Keyboard::R, 13},
+        {sf::Keyboard::F, 14},    {sf::Keyboard::V, 15}};
+    if (keys.contains(keyCode)) {
+        if (waitingX != 0x10) {
+            V[waitingX] = keys.at(keyCode);
+            waitingX = 0x10;
+        }
+        pressedKey = keys.at(keyCode);
     }
-    pressedKey = keyCode;
 }
 
 void Chip8::step() {
-    if (waitingX != 0xF) return;
-    DT--;
+    if (waitingX != 0x10) return;
+    bool needSleep = false;
+    if (DT > 0) {
+        needSleep = true;
+        DT--;
+    }
+    if (ST > 0) {
+        sound.play();
+        needSleep = true;
+        ST--;
+        if (ST == 0) sound.stop();
+    }
+    if (needSleep) {
+        using namespace std::chrono_literals;
+        std::this_thread::sleep_for(3ms);
+    }
     const unsigned short inst = Uint16(memory[PC]) << 8u | memory[PC + 1];
     // 12-bit literal Address
     const Uint16 a = inst & 0xfffU;
@@ -106,7 +132,7 @@ void Chip8::step() {
     spdlog::info(Disasm::disassemble(inst, PC));
     // std::return a << b << n << x << y << '\n';
     if (inst == CLS) {
-        video.fill(0);
+        for (auto& i : video) i.fill(false);
     }
     if (inst == RET) {
         PC = c8stack.top();
@@ -188,9 +214,9 @@ void Chip8::step() {
         V[x] = V[x] ^ V[y];
     }
     if ((inst & INST_F00F) == ADD_VV) {
-        const unsigned result = Uint16(V[x]) + Uint16(V[y]);
+        const Uint16 result = Uint16(V[x]) + Uint16(V[y]);
         V[0xF] = result >= 0xFFU;
-        V[x] = result & 0xFU;
+        V[x] = result & 0xFFU;
     }
     if ((inst & INST_F00F) == SUB) {
         V[0xF] = V[x] > V[y];
@@ -230,8 +256,10 @@ void Chip8::step() {
         return;
     }
     if ((inst & INST_F000) == RND) {
-        // TODO: random
-        V[x] = (rand() % 0xFFU) & b;
+        std::random_device dev;
+        std::mt19937 rng(dev());
+        std::uniform_int_distribution dist255(1, 255);
+        V[x] = dist255(rng) & b;
     }
     if ((inst & INST_F000) == DRW) {
         V[0xF] = 0;
@@ -241,12 +269,9 @@ void Chip8::step() {
             for (int pixel = 0; pixel < 8; pixel++, currentPixel--) {
                 const auto mask = 1u << currentPixel;
                 if (data & mask) {
-                    auto pos = (V[y] + line) * 8u + V[x] / 8u;
-                    if (pixel + (V[x] % 8) > 7) pos++;
-                    const auto mask2 = 1u
-                                       << (7u - ((pixel + (V[x] % 8u)) % 8u));
-                    if ((video[pos] & mask2) == 1) V[0xF] = 1u;  // collision
-                    video[pos] |= (video[pos] & mask2) ^ (0xffu & mask2);
+                    if (video[(V[y] + line) % 32][(V[x] + pixel) % 64] == 1)
+                        V[0xF] = 1u;
+                    video[(V[y] + line) % 32][(V[x] + pixel) % 64] ^= 1u;
                 }
             }
         }
@@ -284,21 +309,21 @@ void Chip8::step() {
     //    }
     if ((inst & INST_F0FF) == BCD_V) {
         const auto value = V[x];
-        const auto hundreds = value / 100;
-        const auto tens = (value / 10) % 10;
-        const auto units = value % 10;
+        const auto hundreds = value / 100u;
+        const auto tens = (value / 10u) % 10u;
+        const auto units = value % 10u;
 
         memory[I] = hundreds;
         memory[I + 1] = tens;
         memory[I + 2] = units;
     }
     if ((inst & INST_F0FF) == LD_MEMI_V) {
-        for (int i = 0; i < x; i++) {
+        for (int i = 0; i <= x; i++) {
             memory[I + i] = V[i];
         }
     }
     if ((inst & INST_F0FF) == LD_V_MEMI) {
-        for (int i = 0; i < x; i++) {
+        for (int i = 0; i <= x; i++) {
             V[i] = memory[I + i];
         }
     }
@@ -314,18 +339,17 @@ void Chip8::step() {
     //    }
 }
 void Chip8::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-    for (int y = 0; const auto& bytes : video) {
-        auto currentPixel = 7u;
-        for (int i = 0; i < 8; i++, currentPixel--) {
-            const auto mask = 1u << currentPixel;
-            if (bytes & mask) {
-                sf::RectangleShape rect(sf::Vector2f(10, 10));
-                rect.setFillColor(sf::Color::Green);
-                rect.setPosition(((y % 8) * 8 + i) * 10, (y / 8) * 10);
+    sf::RectangleShape rect(sf::Vector2f(10, 10));
+    rect.setFillColor(sf::Color::Green);
+
+    for (int i = 0; i < 32; ++i) {
+        for (int j = 0; j < 64; ++j) {
+            if (video[i][j]) {
+                rect.setPosition(j * 10, i * 10);
                 target.draw(rect);
             }
         }
-        y++;
     }
 }
+void Chip8::setReleasedKey() { pressedKey = 0x10; }
 }  // namespace Emuze::Chip8

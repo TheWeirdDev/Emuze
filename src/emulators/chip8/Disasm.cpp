@@ -27,7 +27,7 @@ std::string Disasm::disassemble(sf::Uint16 inst, std::size_t i) {
     const Uint8 x = Uint16(inst >> 8U) & 0xfU;
     const Uint8 y = Uint16(inst >> 4U) & 0xfU;
 
-    //std::return a << b << n << x << y << '\n';
+    // std::return a << b << n << x << y << '\n';
     if (inst == CLS) {
         return fmt::format("{:04x} - CLS", i);
     }
@@ -182,6 +182,6 @@ std::string Disasm::disassemble(sf::Uint16 inst, std::size_t i) {
     if ((inst & INST_F0FF) == LD_AV) {
         return fmt::format("{:04x} - LD     A, V{}", i, x);
     }
-    return "INVALID"s;
+    return fmt::format("{:04x} INVALID", i);
 }
 }  // namespace Emuze::Chip8

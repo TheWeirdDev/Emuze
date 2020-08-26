@@ -9,10 +9,11 @@ void startEmuze() {
                             sf::Style::Titlebar | sf::Style::Close);
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
-    window.setFramerateLimit(160);
+    window.setFramerateLimit(1000);
 
     // Chip8::Disasm diasm{};
-    chip8.openRom("/home/alireza/Downloads/PONG");
+    chip8.openRom(
+        "/home/alireza/Downloads/clones/chip8-0.1.3/examples/INVADERS");
 
     while (window.isOpen()) {
         sf::Event event;
@@ -37,11 +38,12 @@ void startEmuze() {
                     break;
                 case sf::Event::KeyPressed: {
                     spdlog::info(event.key.code);
-                    //                    chip8.play();
-                    //                    using namespace std::chrono_literals;
-                    //                    std::this_thread::sleep_for(200ms);
-                    //                    chip8.stop();
-
+                    chip8.setPressedKey(event.key.code);
+                    break;
+                }
+                case sf::Event::KeyReleased: {
+                    spdlog::info(event.key.code);
+                    chip8.setReleasedKey();
                     break;
                 }
                 default:

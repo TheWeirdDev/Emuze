@@ -11,9 +11,11 @@
 #include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Config.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <array>
 #include <cmath>
 #include <fstream>
+#include <random>
 #include <stack>
 #include <string>
 #include <vector>
@@ -46,31 +48,34 @@ class Chip8 final : public EmulatorView {
         Chip8Sound& operator=(const Chip8Sound&) = delete;
         Chip8Sound& operator=(Chip8Sound&&) = delete;
 
-        inline void play() { sound.play(); }
+        inline void play() {
+            if (sound.getStatus() != sf::Sound::Playing) sound.play();
+        }
         inline void stop() { sound.stop(); }
     };
     Chip8Sound sound{};
 
     std::array<Uint8, MemSize> memory{};
     std::array<Uint8, 16> V{};
-    std::array<Uint8, 0x100> video{};
+    std::array<std::array<bool, 64>, 32> video{};
     std::stack<Uint16> c8stack{};
     Uint32 SP = 0;
     Uint32 base = 0x200;
     Uint16 PC = base;
     std::size_t romSize = 0;
     Uint32 I = 0;
-    Uint8 pressedKey = 0;
-    Uint8 waitingX = 0xF;
+    Uint8 pressedKey = 0x10;
+    Uint8 waitingX = 0x10;
     std::size_t DT = 0;
     std::size_t ST = 0;
     std::size_t clock = 0;
 
    public:
     explicit Chip8();
-    void inline setPressedKey(Uint8);
+    void setPressedKey(sf::Keyboard::Key);
+    void setReleasedKey();
     void reset();
-    void openRom(std::string file);
+    void openRom(const std::string&);
     void step();
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 };
