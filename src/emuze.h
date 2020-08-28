@@ -10,5 +10,5 @@
 
 #include "emulators/chip8/Chip8.h"
 namespace Emuze {
-void startEmuze();
+void startEmuze(const std::string&);
 }

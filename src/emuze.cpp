@@ -2,7 +2,7 @@
 
 #include <chrono>
 namespace Emuze {
-void startEmuze() {
+void startEmuze(const std::string &rom) {
     spdlog::info("Test");
     Chip8::Chip8 chip8{};
     sf::RenderWindow window(sf::VideoMode(900, 600), "SFML works!",
@@ -12,8 +12,7 @@ void startEmuze() {
     window.setFramerateLimit(1000);
 
     // Chip8::Disasm diasm{};
-    chip8.openRom(
-        "/home/alireza/Downloads/clones/chip8-0.1.3/examples/INVADERS");
+    chip8.openRom(rom);
 
     while (window.isOpen()) {
         sf::Event event;
@@ -35,14 +34,13 @@ void startEmuze() {
             switch (event.type) {
                 case sf::Event::Closed:
                     window.close();
+                    chip8.finish();
                     break;
                 case sf::Event::KeyPressed: {
-                    spdlog::info(event.key.code);
                     chip8.setPressedKey(event.key.code);
                     break;
                 }
                 case sf::Event::KeyReleased: {
-                    spdlog::info(event.key.code);
                     chip8.setReleasedKey();
                     break;
                 }

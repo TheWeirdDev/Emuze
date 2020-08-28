@@ -9,7 +9,26 @@
 
 namespace Emuze::Chip8 {
 
-Chip8::Chip8() {
+Chip8::Chip8()
+    : timer_thread([&](const std::stop_token& t) {
+          while (!t.stop_requested()) {
+              bool needSleep = false;
+              if (DT > 0) {
+                  needSleep = true;
+                  DT--;
+              }
+              if (ST > 0) {
+                  sound.play();
+                  needSleep = true;
+                  ST--;
+                  if (ST == 0) sound.stop();
+              }
+              if (needSleep) {
+                  using namespace std::chrono_literals;
+                  std::this_thread::sleep_for(17ms);
+              }
+          }
+      }) {
     int index = 0;
     for (const auto& i : digits) {
         for (const auto& j : i) {
@@ -70,6 +89,7 @@ void Chip8::openRom(const std::string& file) {
     }
 }
 void Chip8::reset() {
+    // TODO: reset memory
     // memory.fill(0);
     V.fill(0);
     for (auto& i : video) i.fill(false);
@@ -103,21 +123,7 @@ void Chip8::setPressedKey(sf::Keyboard::Key keyCode) {
 
 void Chip8::step() {
     if (waitingX != 0x10) return;
-    bool needSleep = false;
-    if (DT > 0) {
-        needSleep = true;
-        DT--;
-    }
-    if (ST > 0) {
-        sound.play();
-        needSleep = true;
-        ST--;
-        if (ST == 0) sound.stop();
-    }
-    if (needSleep) {
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(3ms);
-    }
+
     const unsigned short inst = Uint16(memory[PC]) << 8u | memory[PC + 1];
     // 12-bit literal Address
     const Uint16 a = inst & 0xfffU;
@@ -129,7 +135,7 @@ void Chip8::step() {
     // vx and vy registers
     const Uint8 x = Uint16(inst >> 8U) & 0xfU;
     const Uint8 y = Uint16(inst >> 4U) & 0xfU;
-    spdlog::info(Disasm::disassemble(inst, PC));
+    // spdlog::info(DT);
     // std::return a << b << n << x << y << '\n';
     if (inst == CLS) {
         for (auto& i : video) i.fill(false);
@@ -269,9 +275,9 @@ void Chip8::step() {
             for (int pixel = 0; pixel < 8; pixel++, currentPixel--) {
                 const auto mask = 1u << currentPixel;
                 if (data & mask) {
-                    if (video[(V[y] + line) % 32][(V[x] + pixel) % 64] == 1)
-                        V[0xF] = 1u;
-                    video[(V[y] + line) % 32][(V[x] + pixel) % 64] ^= 1u;
+                    const auto w = (V[x] + pixel) % 64, h = (V[y] + line) % 32;
+                    if (video[h][w] == 1) V[0xF] = 1u;
+                    video[h][w] ^= 1u;
                 }
             }
         }
@@ -352,4 +358,5 @@ void Chip8::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     }
 }
 void Chip8::setReleasedKey() { pressedKey = 0x10; }
+void Chip8::finish() { timer_thread.request_stop(); }
 }  // namespace Emuze::Chip8

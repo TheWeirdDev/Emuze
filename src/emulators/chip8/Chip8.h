@@ -18,6 +18,7 @@
 #include <random>
 #include <stack>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "../../components/EmulatorView.h"
@@ -69,6 +70,7 @@ class Chip8 final : public EmulatorView {
     std::size_t DT = 0;
     std::size_t ST = 0;
     std::size_t clock = 0;
+    std::jthread timer_thread;
 
    public:
     explicit Chip8();
@@ -78,6 +80,7 @@ class Chip8 final : public EmulatorView {
     void openRom(const std::string&);
     void step();
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+    void finish();
 };
 
 static const constinit std::array<const std::array<Uint8, 5>, 16> digits{{
