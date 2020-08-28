@@ -3,7 +3,10 @@ My hobby project to learn about emulators.
 
 Emuze currently only supports Chip8 games.
 
+![Emuze Screenrecord](screenrecord/record.gif)
+
 # Run
+You need a C++20 compiler (GCC g++ 10.1.0 recommended)
 ```bash
 mkdir build && cd build
 cmake ..
