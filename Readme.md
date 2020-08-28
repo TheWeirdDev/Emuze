@@ -7,6 +7,9 @@ Emuze currently only supports Chip8 games.
 
 # Run
 You need a C++20 compiler (GCC g++ 10.1.0 recommended)
+
+Install `SFML`, `spdlog`, `fmt` and `pthread` libraries on your system before compiling.
+
 ```bash
 mkdir build && cd build
 cmake ..
