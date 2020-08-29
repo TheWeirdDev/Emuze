@@ -10,11 +10,14 @@
 #include <SFML/Audio/Sound.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Config.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <array>
 #include <cmath>
+#include <filesystem>
 #include <fstream>
+#include <map>
 #include <random>
 #include <stack>
 #include <string>
@@ -43,7 +46,7 @@ class Chip8 final : public EmulatorView {
 
        public:
         Chip8Sound();
-        ~Chip8Sound();
+        ~Chip8Sound() { sound.stop(); };
         Chip8Sound(const Chip8Sound&) = delete;
         Chip8Sound(Chip8Sound&&) = delete;
         Chip8Sound& operator=(const Chip8Sound&) = delete;
@@ -60,20 +63,22 @@ class Chip8 final : public EmulatorView {
     std::array<Uint8, 16> V{};
     std::array<std::array<bool, 64>, 32> video{};
     std::stack<Uint16> c8stack{};
-    Uint32 SP = 0;
     Uint32 base = 0x200;
     Uint16 PC = base;
-    std::size_t romSize = 0;
     Uint32 I = 0;
-    Uint8 pressedKey = 0x10;
-    Uint8 waitingX = 0x10;
-    std::size_t DT = 0;
-    std::size_t ST = 0;
-    std::size_t clock = 0;
+    static constexpr Uint8 UNSET_KEY = 0x10;
+    Uint8 pressedKey = UNSET_KEY;
+    Uint8 waitingX = UNSET_KEY;
+    std::atomic_uint16_t DT = 0;
+    std::atomic_uint16_t ST = 0;
     std::jthread timer_thread;
 
    public:
     explicit Chip8();
+    Chip8(const Chip8&) = delete;
+    Chip8(Chip8&&) = delete;
+    Chip8& operator=(const Chip8&) = delete;
+    Chip8& operator=(Chip8&&) = delete;
     void setPressedKey(sf::Keyboard::Key);
     void setReleasedKey();
     void reset();
