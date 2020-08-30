@@ -14,7 +14,7 @@ Install `SFML`, `spdlog`, `fmt` and `pthread` libraries on your system before co
 mkdir build && cd build
 cmake ..
 make
-./Emuze path_to_chip8_rom_file
+./Emuze games/chip8_roms/INVADERS
 ```
 
 # License

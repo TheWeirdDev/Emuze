@@ -8,7 +8,6 @@ cmake_*
 *.a
 *.out
 *.so
-games/
 Emuze
 Emuze.*
 Makefile
