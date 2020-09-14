@@ -30,16 +30,14 @@
 namespace Emuze::Chip8 {
 using sf::Uint8, sf::Uint16, sf::Uint32;
 
-constexpr std::size_t MemSize = 0x1000;
+constexpr std::size_t MEM_SIZE = 0x1000;
 
 class Chip8 final : public EmulatorView {
    private:
     class Chip8Sound final {
        private:
-        static constexpr unsigned SAMPLE_RATE = 44100;
-        static constexpr unsigned AMPLITUDE = 30000;
-        static constexpr unsigned SAMPLES = 44100;
-
+        static constexpr unsigned SAMPLE_RATE = 44100, AMPLITUDE = 30000,
+                                  SAMPLES = 44100;
         void initSound(const sf::Int16* first);
         sf::Sound sound;
         sf::SoundBuffer buffer;
@@ -59,9 +57,12 @@ class Chip8 final : public EmulatorView {
     };
     Chip8Sound sound{};
 
-    std::array<Uint8, MemSize> memory{};
+    std::array<Uint8, MEM_SIZE> memory{};
     std::array<Uint8, 16> V{};
-    std::array<std::array<bool, 64>, 32> video{};
+
+    static constexpr unsigned int DISPLAY_COLUMNS = 64, DISPLAY_ROWS = 32,
+                                  PIXEL_SCALE = 10;
+    std::array<std::array<bool, DISPLAY_COLUMNS>, DISPLAY_ROWS> video{};
     std::stack<Uint16> c8stack{};
     Uint32 base = 0x200;
     Uint16 PC = base;

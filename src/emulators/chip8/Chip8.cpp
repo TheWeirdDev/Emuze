@@ -55,7 +55,7 @@ void Chip8::openRom(const std::string& file) {
     std::ifstream in_file(file, std::ios::in | std::ios::binary);
 
     const auto fileSize = std::filesystem::file_size(file);
-    if (fileSize >= MemSize - 0x200) {
+    if (fileSize >= MEM_SIZE - 0x200) {
         spdlog::error("Rom file is too big");
         std::exit(1);
     }
@@ -197,7 +197,8 @@ void Chip8::step() {
             for (int pixel = 0; pixel < 8; pixel++, currentPixel--) {
                 const auto mask = 1u << currentPixel;
                 if (data & mask) {
-                    const auto w = (V[x] + pixel) % 64, h = (V[y] + line) % 32;
+                    const auto w = (V[x] + pixel) % DISPLAY_COLUMNS,
+                               h = (V[y] + line) % DISPLAY_ROWS;
                     if (video[h][w] == 1) V[0xF] = 1u;
                     video[h][w] ^= 1u;
                 }
@@ -245,13 +246,13 @@ void Chip8::step() {
     PC += 2;
 }
 void Chip8::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-    sf::RectangleShape rect(sf::Vector2f(10, 10));
+    sf::RectangleShape rect(sf::Vector2f(PIXEL_SCALE, PIXEL_SCALE));
     rect.setFillColor(sf::Color::Green);
 
-    for (int i = 0; i < 32; ++i) {
-        for (int j = 0; j < 64; ++j) {
+    for (int i = 0; i < DISPLAY_ROWS; ++i) {
+        for (int j = 0; j < DISPLAY_COLUMNS; ++j) {
             if (video[i][j]) {
-                rect.setPosition(j * 10, i * 10);
+                rect.setPosition(j * PIXEL_SCALE, i * PIXEL_SCALE);
                 target.draw(rect);
             }
         }
