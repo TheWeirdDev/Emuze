@@ -12,6 +12,7 @@
 #include <SFML/Config.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/Text.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <array>
 #include <cmath>
@@ -25,6 +26,7 @@
 #include <vector>
 
 #include "../../components/EmulatorView.h"
+#include "../../emuze.h"
 #include "Disasm.h"
 
 namespace Emuze::Chip8 {

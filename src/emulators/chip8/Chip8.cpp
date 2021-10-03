@@ -72,7 +72,7 @@ void Chip8::openRom(const std::string& file) {
     }
 }
 void Chip8::reset() {
-    memory.fill(0);
+    // memory.fill(0);
     for (int index = 0; const auto& i : digits) {
         for (const auto& j : i) {
             memory[index++] = j;
@@ -90,6 +90,11 @@ void Chip8::reset() {
 }
 
 void Chip8::setPressedKey(sf::Keyboard::Key keyCode) {
+    if (keyCode == sf::Keyboard::R) {
+        reset();
+        return;
+    }
+
     static const std::map<sf::Keyboard::Key, Uint8> keys{
         {sf::Keyboard::X, 0},     {sf::Keyboard::Num1, 1},
         {sf::Keyboard::Num2, 2},  {sf::Keyboard::Num3, 3},
@@ -246,6 +251,17 @@ void Chip8::step() {
     PC += 2;
 }
 void Chip8::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+    sf::Font font;
+    font.loadFromFile("../assets/FFFFORWARD.TTF");
+
+    sf::Text text;
+    text.setFillColor(sf::Color::Green);
+    text.setFont(font);
+    text.setString("[R] Reset");
+    text.setCharacterSize(22);
+    text.setPosition(sf::Vector2f(10, Emuze::SCREEN_HEIGHT - 30));
+    target.draw(text);
+
     sf::RectangleShape rect(sf::Vector2f(PIXEL_SCALE, PIXEL_SCALE));
     rect.setFillColor(sf::Color::Green);
 
