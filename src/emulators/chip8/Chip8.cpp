@@ -243,12 +243,9 @@ void Chip8::step() {
     PC += INSTRUCTION_LENGTH;
 }
 void Chip8::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-    sf::Font font;
-    font.loadFromFile("../assets/FFFFORWARD.TTF");
-
     sf::Text text;
     text.setFillColor(sf::Color::Green);
-    text.setFont(font);
+    text.setFont(forward_font);
     text.setString("[R] Reset");
     text.setCharacterSize(22);
     text.setPosition(sf::Vector2f(10, Emuze::SCREEN_HEIGHT - 30));

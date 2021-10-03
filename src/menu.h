@@ -17,13 +17,9 @@ using namespace Emuze::Chip8;
 class Menu final : public sf::Drawable {
     void draw(sf::RenderTarget &target,
               sf::RenderStates states) const override {
-        sf::Font font;
-        if (!font.loadFromFile("../assets/FFFFORWARD.TTF")) {
-            // error...
-        }
         sf::Text text;
         text.setFillColor(sf::Color::Green);
-        text.setFont(font);
+        text.setFont(Emuze::forward_font);
         text.setString("WELCOME TO EMUZE");
         text.setCharacterSize(42);
         sf::FloatRect textRect = text.getLocalBounds();

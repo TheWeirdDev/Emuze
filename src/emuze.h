@@ -13,6 +13,7 @@
 #include "emulators/chip8/Chip8.h"
 namespace Emuze {
 static constexpr int SCREEN_WIDTH = 900, SCREEN_HEIGHT = 600;
+static sf::Font forward_font;
 int startEmuze();
 }  // namespace Emuze
 
