@@ -15,11 +15,27 @@
 using namespace Emuze::Chip8;
 
 class Menu final : public sf::Drawable {
-    void draw(sf::RenderTarget &target,
+   private:
+    sf::Font forward_font;
+
+   public:
+    Menu() {
+        if (!forward_font.loadFromFile("../assets/FFFFORWARD.TTF")) {
+            spdlog::error("Can't load font file");
+            std::exit(1);
+        }
+    }
+    ~Menu() = default;
+    Menu(const Menu&) = delete;
+    Menu(Menu&&) = delete;
+    Menu& operator=(const Menu&) = delete;
+    Menu& operator=(Menu&&) = delete;
+
+    void draw(sf::RenderTarget& target,
               sf::RenderStates states) const override {
         sf::Text text;
         text.setFillColor(sf::Color::Green);
-        text.setFont(Emuze::forward_font);
+        text.setFont(forward_font);
         text.setString("WELCOME TO EMUZE");
         text.setCharacterSize(42);
         sf::FloatRect textRect = text.getLocalBounds();

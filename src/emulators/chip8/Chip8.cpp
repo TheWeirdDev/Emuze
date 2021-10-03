@@ -6,7 +6,12 @@
 
 namespace Emuze::Chip8 {
 
-Chip8::Chip8() {}
+Chip8::Chip8() {
+    if (!forward_font.loadFromFile("../assets/FFFFORWARD.TTF")) {
+        spdlog::error("Can't load font file");
+        std::exit(1);
+    }
+}
 
 Chip8::Chip8Sound::Chip8Sound() {
     std::vector<sf::Int16> samples{};

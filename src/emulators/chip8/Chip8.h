@@ -77,6 +77,7 @@ class Chip8 final : public EmulatorView {
     int DT = 0;
     int ST = 0;
     std::string currentRom;
+    sf::Font forward_font;
 
    public:
     explicit Chip8();

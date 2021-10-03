@@ -10,11 +10,6 @@ int startEmuze() {
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Emuze",
                             sf::Style::Titlebar | sf::Style::Close);
 
-    if (!forward_font.loadFromFile("../assets/FFFFORWARD.TTF")) {
-        spdlog::error("Can't load font file");
-        return 1;
-    }
-
     // Chip8 runs about 1000 instructions per second.
     // This should change depending on what hardware Emuze is emulating
     window.setFramerateLimit(60);
@@ -25,7 +20,7 @@ int startEmuze() {
 
         window.clear();
         if (runningGame) {
-            for (int i = 0; i < 16; i++) {
+            for (int i = 0; i < STEPS_PER_FRAME; i++) {
                 chip8.step();
                 window.draw(chip8);
             }
