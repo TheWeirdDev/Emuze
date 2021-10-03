@@ -18,11 +18,11 @@
 #include <cmath>
 #include <filesystem>
 #include <fstream>
+#include <functional>
 #include <map>
 #include <random>
 #include <stack>
 #include <string>
-#include <thread>
 #include <vector>
 
 #include "../../components/EmulatorView.h"
@@ -74,9 +74,8 @@ class Chip8 final : public EmulatorView {
     static constexpr Uint8 UNSET_KEY = 0x10;
     Uint8 pressedKey = UNSET_KEY;
     Uint8 waitingX = UNSET_KEY;
-    std::atomic_uint16_t DT = 0;
-    std::atomic_uint16_t ST = 0;
-    std::jthread timer_thread;
+    int DT = 0;
+    int ST = 0;
     std::string currentRom;
 
    public:

@@ -12,7 +12,7 @@ int startEmuze() {
 
     // Chip8 runs about 1000 instructions per second.
     // This should change depending on what hardware Emuze is emulating
-    window.setFramerateLimit(1000);
+    window.setFramerateLimit(60);
     bool runningGame = false;
 
     while (window.isOpen()) {
@@ -20,13 +20,14 @@ int startEmuze() {
 
         window.clear();
         if (runningGame) {
-            window.draw(chip8);
+            for (int i = 0; i < 16; i++) {
+                chip8.step();
+                window.draw(chip8);
+            }
         } else {
             window.draw(menu);
         }
-
         window.display();
-        chip8.step();
 
         while (window.pollEvent(event)) {
             switch (event.type) {

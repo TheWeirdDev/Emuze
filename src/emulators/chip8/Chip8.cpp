@@ -6,26 +6,7 @@
 
 namespace Emuze::Chip8 {
 
-Chip8::Chip8()
-    : timer_thread([&](const std::stop_token& t) {
-          while (!t.stop_requested()) {
-              bool needSleep = false;
-              if (DT > 0) {
-                  needSleep = true;
-                  DT--;
-              }
-              if (ST > 0) {
-                  sound.play();
-                  needSleep = true;
-                  ST--;
-                  if (ST == 0) sound.stop();
-              }
-              if (needSleep) {
-                  using namespace std::chrono_literals;
-                  std::this_thread::sleep_for(17ms);
-              }
-          }
-      }) {}
+Chip8::Chip8() {}
 
 Chip8::Chip8Sound::Chip8Sound() {
     std::vector<sf::Int16> samples{};
@@ -117,6 +98,15 @@ void Chip8::setPressedKey(sf::Keyboard::Key keyCode) {
 
 void Chip8::step() {
     if (waitingX != UNSET_KEY) return;
+
+    if (DT > 0) {
+        DT--;
+    }
+    if (ST > 0) {
+        sound.play();
+        ST--;
+        if (ST == 0) sound.stop();
+    }
 
     const unsigned short inst = Uint16(memory[PC]) << 8u | memory[PC + 1];
     // 12-bit literal Address
@@ -224,9 +214,9 @@ void Chip8::step() {
     } else if ((inst & INST_F0FF) == LD_VK) {
         waitingX = x;
     } else if ((inst & INST_F0FF) == LD_DTV) {
-        DT = V[x];
+        DT = V[x] * 16;
     } else if ((inst & INST_F0FF) == LD_STV) {
-        ST = V[x];
+        ST = V[x] * 16;
     } else if ((inst & INST_F0FF) == ADD_IV) {
         I = I + V[x];
     } else if ((inst & INST_F0FF) == LD_FV) {
@@ -277,5 +267,6 @@ void Chip8::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     }
 }
 void Chip8::setReleasedKey() { pressedKey = UNSET_KEY; }
-void Chip8::finish() { timer_thread.request_stop(); }
+void Chip8::finish() {}
+
 }  // namespace Emuze::Chip8
