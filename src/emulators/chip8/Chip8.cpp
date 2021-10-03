@@ -34,7 +34,7 @@ Chip8::Chip8Sound::Chip8Sound() {
     double x = 0;
     samples.reserve(SAMPLES);
     for (size_t i = 0; i < SAMPLES; i++) {
-        samples[i] = AMPLITUDE * sin(x * TWO_PI);
+        samples[i] = static_cast<sf::Int16>(AMPLITUDE * sin(x * TWO_PI));
         x += increment;
     }
     initSound(&samples.front());
@@ -59,16 +59,17 @@ void Chip8::openRom(const std::string& file) {
         spdlog::error("Rom file is too big");
         std::exit(1);
     }
-    if (!in_file.read((char*)(memory.data() + 0x200), fileSize)) {
+    if (!in_file.read((char*)(memory.data() + 0x200),
+                      static_cast<std::streamsize>(fileSize))) {
         spdlog::error("Error while reading the rom file");
         std::exit(1);
     }
     currentRom = file;
     for (unsigned int i = 0; i < fileSize; i += 2) {
-        const auto addr = i + 0x200;
-        std::cout << Disasm::disassemble(
-                         sf::Uint16(memory[addr]) << 8u | memory[addr + 1],
-                         addr)
+        const auto address = i + 0x200;
+        std::cout << Disasm::disassemble(sf::Uint16(memory[address]) << 8u |
+                                             memory[address + 1],
+                                         address)
                   << '\n';
     }
 }

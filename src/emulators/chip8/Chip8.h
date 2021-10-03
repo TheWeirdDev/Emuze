@@ -36,14 +36,14 @@ constexpr std::size_t MEM_SIZE = 0x1000;
 
 class Chip8 final : public EmulatorView {
    public:
-    static constexpr unsigned int DISPLAY_COLUMNS = 64, DISPLAY_ROWS = 32,
-                                  PIXEL_SCALE = 10;
+    static constexpr auto DISPLAY_COLUMNS = 64, DISPLAY_ROWS = 32,
+                          PIXEL_SCALE = 10.0;
 
    private:
     class Chip8Sound final {
        private:
-        static constexpr unsigned SAMPLE_RATE = 44100, AMPLITUDE = 30000,
-                                  SAMPLES = 44100;
+        static constexpr auto SAMPLE_RATE = 44100, AMPLITUDE = 30000,
+                              SAMPLES = 44100;
         void initSound(const sf::Int16* first);
         sf::Sound sound;
         sf::SoundBuffer buffer;
