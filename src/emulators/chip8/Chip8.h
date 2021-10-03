@@ -78,6 +78,7 @@ class Chip8 final : public EmulatorView {
     int ST = 0;
     std::string currentRom;
     sf::Font forward_font;
+    bool finished = true;
 
    public:
     explicit Chip8();
@@ -92,6 +93,7 @@ class Chip8 final : public EmulatorView {
     void step();
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
     void finish();
+    bool isFinished() { return finished; }
 };
 
 static const constinit std::array<const std::array<Uint8, 5>, 16> digits{{

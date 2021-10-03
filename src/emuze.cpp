@@ -19,6 +19,9 @@ int startEmuze() {
         sf::Event event{};
 
         window.clear();
+
+        runningGame = !chip8.isFinished();
+
         if (runningGame) {
             for (int i = 0; i < STEPS_PER_FRAME; i++) {
                 chip8.step();

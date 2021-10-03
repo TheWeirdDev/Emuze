@@ -51,6 +51,7 @@ void Chip8::openRom(const std::string& file) {
         std::exit(1);
     }
     currentRom = file;
+    finished = false;
     for (unsigned int i = 0; i < fileSize; i += 2) {
         const auto address = i + 0x200;
         std::cout << Disasm::disassemble(sf::Uint16(memory[address]) << 8u |
@@ -78,9 +79,17 @@ void Chip8::reset() {
 }
 
 void Chip8::setPressedKey(sf::Keyboard::Key keyCode) {
-    if (keyCode == sf::Keyboard::R) {
-        openRom(currentRom);
-        return;
+    switch (keyCode) {
+        case sf::Keyboard::R: {
+            openRom(currentRom);
+            return;
+        }
+        case sf::Keyboard::M: {
+            finished = true;
+            reset();
+        }
+        default:
+            break;
     }
 
     static const std::map<sf::Keyboard::Key, Uint8> keys{
@@ -251,7 +260,7 @@ void Chip8::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     sf::Text text;
     text.setFillColor(sf::Color::Green);
     text.setFont(forward_font);
-    text.setString("[R] Reset");
+    text.setString("[R] Reset\t[M] Main Menu");
     text.setCharacterSize(22);
     text.setPosition(sf::Vector2f(10, Emuze::SCREEN_HEIGHT - 30));
     target.draw(text);
@@ -269,6 +278,6 @@ void Chip8::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     }
 }
 void Chip8::setReleasedKey() { pressedKey = UNSET_KEY; }
-void Chip8::finish() {}
+void Chip8::finish() { finished = true; }
 
 }  // namespace Emuze::Chip8

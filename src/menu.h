@@ -25,7 +25,7 @@ class Menu final : public sf::Drawable {
             std::exit(1);
         }
     }
-    ~Menu() = default;
+    ~Menu() override = default;
     Menu(const Menu&) = delete;
     Menu(Menu&&) = delete;
     Menu& operator=(const Menu&) = delete;
