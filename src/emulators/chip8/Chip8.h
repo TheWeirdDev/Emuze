@@ -37,7 +37,7 @@ constexpr std::size_t MEM_SIZE = 0x1000;
 class Chip8 final : public EmulatorView {
    public:
     static constexpr auto DISPLAY_COLUMNS = 64, DISPLAY_ROWS = 32,
-                          PIXEL_SCALE = 10.0;
+                          PIXEL_SCALE = 10.0, INSTRUCTION_LENGTH = 2;
 
    private:
     class Chip8Sound final {

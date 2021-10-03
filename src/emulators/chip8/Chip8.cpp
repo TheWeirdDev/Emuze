@@ -29,8 +29,8 @@ Chip8::Chip8()
 
 Chip8::Chip8Sound::Chip8Sound() {
     std::vector<sf::Int16> samples{};
-    const double TWO_PI = 6.28318;
-    const double increment = 440. / 44100;
+    constexpr double TWO_PI = M_PI * 2;
+    constexpr double increment = 440. / 44100;
     double x = 0;
     samples.reserve(SAMPLES);
     for (size_t i = 0; i < SAMPLES; i++) {
@@ -250,7 +250,7 @@ void Chip8::step() {
         }
     }
     // Go to the next instruction
-    PC += 2;
+    PC += INSTRUCTION_LENGTH;
 }
 void Chip8::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     sf::Font font;
