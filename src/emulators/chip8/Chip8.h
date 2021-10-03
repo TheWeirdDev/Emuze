@@ -33,6 +33,10 @@ using sf::Uint8, sf::Uint16, sf::Uint32;
 constexpr std::size_t MEM_SIZE = 0x1000;
 
 class Chip8 final : public EmulatorView {
+   public:
+    static constexpr unsigned int DISPLAY_COLUMNS = 64, DISPLAY_ROWS = 32,
+                                  PIXEL_SCALE = 10;
+
    private:
     class Chip8Sound final {
        private:
@@ -60,8 +64,6 @@ class Chip8 final : public EmulatorView {
     std::array<Uint8, MEM_SIZE> memory{};
     std::array<Uint8, 16> V{};
 
-    static constexpr unsigned int DISPLAY_COLUMNS = 64, DISPLAY_ROWS = 32,
-                                  PIXEL_SCALE = 10;
     std::array<std::array<bool, DISPLAY_COLUMNS>, DISPLAY_ROWS> video{};
     std::stack<Uint16> c8stack{};
     Uint32 base = 0x200;

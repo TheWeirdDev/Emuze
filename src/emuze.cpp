@@ -1,21 +1,30 @@
 #include "emuze.h"
 
+#include "../libs/nativefiledialog/src/include/nfd.h"
+#include "menu.h"
+
 namespace Emuze {
-void startEmuze(const std::string &rom) {
+int startEmuze() {
     Chip8::Chip8 chip8{};
-    sf::RenderWindow window(sf::VideoMode(900, 600), "Emuze",
+    Menu menu{};
+    sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Emuze",
                             sf::Style::Titlebar | sf::Style::Close);
 
     // Chip8 runs about 1000 instructions per second.
     // This should change depending on what hardware Emuze is emulating
     window.setFramerateLimit(1000);
-    chip8.openRom(rom);
+    bool runningGame = false;
 
     while (window.isOpen()) {
         sf::Event event{};
 
         window.clear();
-        window.draw(chip8);
+        if (runningGame) {
+            window.draw(chip8);
+        } else {
+            window.draw(menu);
+        }
+
         window.display();
         chip8.step();
 
@@ -26,7 +35,33 @@ void startEmuze(const std::string &rom) {
                     window.close();
                     break;
                 case sf::Event::KeyPressed: {
-                    chip8.setPressedKey(event.key.code);
+                    if (!runningGame) {
+                        switch (event.key.code) {
+                            case sf::Keyboard::Key::O: {
+                                nfdchar_t *outPath = nullptr;
+                                nfdresult_t result =
+                                    NFD_OpenDialog(nullptr, nullptr, &outPath);
+
+                                if (result == NFD_OKAY) {
+                                    puts("Success!");
+                                    chip8.openRom(outPath);
+                                    free(outPath);
+                                    runningGame = true;
+                                } else if (result == NFD_CANCEL) {
+                                    puts("User pressed cancel.");
+                                } else {
+                                    printf("Error: %s\n", NFD_GetError());
+                                }
+                                break;
+                            }
+                            case sf::Keyboard::Key::Q:
+                                return 0;
+                            default:
+                                break;
+                        }
+                    } else {
+                        chip8.setPressedKey(event.key.code);
+                    }
                     break;
                 }
                 case sf::Event::KeyReleased: {
@@ -38,5 +73,6 @@ void startEmuze(const std::string &rom) {
             }
         }
     }
+    return 0;
 }
 }  // namespace Emuze
