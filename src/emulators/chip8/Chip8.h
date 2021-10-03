@@ -77,6 +77,7 @@ class Chip8 final : public EmulatorView {
     std::atomic_uint16_t DT = 0;
     std::atomic_uint16_t ST = 0;
     std::jthread timer_thread;
+    std::string currentRom;
 
    public:
     explicit Chip8();

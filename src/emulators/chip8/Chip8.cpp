@@ -63,6 +63,7 @@ void Chip8::openRom(const std::string& file) {
         spdlog::error("Error while reading the rom file");
         std::exit(1);
     }
+    currentRom = file;
     for (unsigned int i = 0; i < fileSize; i += 2) {
         const auto addr = i + 0x200;
         std::cout << Disasm::disassemble(
@@ -72,7 +73,7 @@ void Chip8::openRom(const std::string& file) {
     }
 }
 void Chip8::reset() {
-    // memory.fill(0);
+    memory.fill(0);
     for (int index = 0; const auto& i : digits) {
         for (const auto& j : i) {
             memory[index++] = j;
@@ -91,7 +92,7 @@ void Chip8::reset() {
 
 void Chip8::setPressedKey(sf::Keyboard::Key keyCode) {
     if (keyCode == sf::Keyboard::R) {
-        reset();
+        openRom(currentRom);
         return;
     }
 
