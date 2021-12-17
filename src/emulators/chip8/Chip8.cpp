@@ -52,16 +52,14 @@ void Chip8::openRom(const std::string& file) {
     }
     currentRom = file;
     finished = false;
-    for (unsigned int i = 0; i < fileSize; i += 2) {
+    for (unsigned int i = 0; i < fileSize; ++i) {
         const auto address = i + 0x200;
-        std::cout << Disasm::disassemble(sf::Uint16(memory[address]) << 8u |
-                                             memory[address + 1],
-                                         address)
-                  << '\n';
+        disasm.insert(std::make_pair(address, Disasm::disassemble(sf::Uint16(memory[address]) << 8u | memory[address + 1], address)));
     }
 }
 void Chip8::reset() {
     memory.fill(0);
+    disasm.clear();
     for (int index = 0; const auto& i : digits) {
         for (const auto& j : i) {
             memory[index++] = j;
@@ -76,6 +74,7 @@ void Chip8::reset() {
     I = 0;
     PC = base;
     DT = ST = 0;
+    debug = false;
 }
 
 void Chip8::setPressedKey(sf::Keyboard::Key keyCode) {
@@ -87,6 +86,20 @@ void Chip8::setPressedKey(sf::Keyboard::Key keyCode) {
         case sf::Keyboard::M: {
             finished = true;
             reset();
+            return;
+        }
+        case sf::Keyboard::B: {
+            debug = !debug;
+            if (debug)
+                sound.stop();
+
+            break;
+        }
+        case sf::Keyboard::L: {
+            if (debug) {
+                step();
+            }
+            break;   
         }
         default:
             break;
@@ -260,7 +273,7 @@ void Chip8::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     sf::Text text;
     text.setFillColor(sf::Color::Green);
     text.setFont(forward_font);
-    text.setString("[R] Reset\t[M] Main Menu");
+    text.setString("[R] Reset\t[M] Main Menu\t[B] Debug");
     text.setCharacterSize(22);
     text.setPosition(sf::Vector2f(10, Emuze::SCREEN_HEIGHT - 30));
     target.draw(text);
@@ -276,7 +289,48 @@ void Chip8::draw(sf::RenderTarget& target, sf::RenderStates states) const {
             }
         }
     }
+    
+    if (debug){
+        constexpr auto STEP = 2;
+        auto start = std::max((int)base, PC - 5 * STEP);
+        for(int i = start, j = 0; i < start + 11 * STEP; i += STEP, j++) {
+            auto color = sf::Color::Green; 
+            if (j == 5) {
+                sf::RectangleShape rect(sf::Vector2f(32*PIXEL_SCALE+8, 2*PIXEL_SCALE+8));
+                rect.setFillColor(sf::Color(110,110,110));               
+                rect.setPosition(sf::Vector2f(PIXEL_SCALE * (DISPLAY_COLUMNS + 4) - 32, j*(DISPLAY_ROWS)));
+                target.draw(rect);
+                color = sf::Color::White;
+            }
+            text.setFillColor(color);
+            
+            text.setString(disasm.at(i));
+            text.setCharacterSize(16);
+            text.setPosition(sf::Vector2f(PIXEL_SCALE * (DISPLAY_COLUMNS + 4), j*(DISPLAY_ROWS)+8));
+            target.draw(text);
+        }
+
+        const auto print_register = [&](auto reg, auto reg_name, auto posx, auto posy) {
+            text.setString(fmt::format("{}: {} ({:#04x})", reg_name, reg, reg)); 
+            text.setPosition(sf::Vector2f(PIXEL_SCALE * posx, PIXEL_SCALE * (DISPLAY_ROWS + posy)));
+            target.draw(text);
+        };
+
+        text.setFillColor(sf::Color::White);
+        print_register(PC,"PC", 2,  2);
+        print_register(I, "I" , 24, 2);
+        print_register(DT,"DT", 2,  6);
+        print_register(ST,"ST", 24, 6);
+
+        text.setFillColor(sf::Color(160,160,160));
+        int counter = 0;
+        for (const auto& i : V) {
+            print_register(i, fmt::format("V{}", counter), (counter % 4) * 16, 14 + (counter / 4) * 3);
+            counter++;
+        }
+    }
 }
+
 void Chip8::setReleasedKey() { pressedKey = UNSET_KEY; }
 void Chip8::finish() { finished = true; }
 

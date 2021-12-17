@@ -20,10 +20,12 @@
 #include <fstream>
 #include <functional>
 #include <map>
+#include <algorithm>
 #include <random>
 #include <stack>
 #include <string>
 #include <vector>
+#include <utility>
 
 #include "../../components/EmulatorView.h"
 #include "../../emuze.h"
@@ -68,7 +70,7 @@ class Chip8 final : public EmulatorView {
 
     std::array<std::array<bool, DISPLAY_COLUMNS>, DISPLAY_ROWS> video{};
     std::stack<Uint16> c8stack{};
-    Uint32 base = 0x200;
+    static constexpr Uint32 base = 0x200;
     Uint16 PC = base;
     Uint32 I = 0;
     static constexpr Uint8 UNSET_KEY = 0x10;
@@ -79,6 +81,9 @@ class Chip8 final : public EmulatorView {
     std::string currentRom;
     sf::Font forward_font;
     bool finished = true;
+    bool debug = false;
+    std::map<const int, std::string> disasm;
+    
 
    public:
     explicit Chip8();
@@ -94,6 +99,7 @@ class Chip8 final : public EmulatorView {
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
     void finish();
     bool isFinished() { return finished; }
+    bool isDebug() { return debug; }
 };
 
 static const constinit std::array<const std::array<Uint8, 5>, 16> digits{{
