@@ -12,7 +12,7 @@
 
 #include "emulators/chip8/Chip8.h"
 namespace Emuze {
-static constexpr int SCREEN_WIDTH = 900, SCREEN_HEIGHT = 600,
+static constexpr int SCREEN_WIDTH = 1100, SCREEN_HEIGHT = 650,
                      STEPS_PER_FRAME = 16;
 int startEmuze();
 }  // namespace Emuze
