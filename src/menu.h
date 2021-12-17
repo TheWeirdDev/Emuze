@@ -52,7 +52,6 @@ class Menu final : public sf::Drawable {
         text.setCharacterSize(24);
         text.setString(
             "[O] Open a game file\n\n"
-            "[C] Change color\n\n"
             "[Q] Quit");
         target.draw(text);
     }
