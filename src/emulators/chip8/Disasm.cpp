@@ -1,7 +1,3 @@
-//
-// Created by alireza on 5/24/20.
-//
-
 #include "Disasm.h"
 
 #include <SFML/Graphics.hpp>

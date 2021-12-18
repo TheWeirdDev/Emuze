@@ -1,7 +1,3 @@
-//
-// Created by alireza on 5/30/20.
-//
-
 #include "Chip8.h"
 
 namespace Emuze::Chip8 {
@@ -99,7 +95,7 @@ void Chip8::setPressedKey(sf::Keyboard::Key keyCode) {
             if (debug) {
                 step();
             }
-            break;   
+            break;
         }
         default:
             break;
@@ -289,21 +285,21 @@ void Chip8::draw(sf::RenderTarget& target, sf::RenderStates states) const {
             }
         }
     }
-    
+
     if (debug){
         constexpr auto STEP = 2;
         auto start = std::max((int)base, PC - 5 * STEP);
         for(int i = start, j = 0; i < start + 11 * STEP; i += STEP, j++) {
-            auto color = sf::Color::Green; 
+            auto color = sf::Color::Green;
             if (j == 5) {
                 sf::RectangleShape rect(sf::Vector2f(32*PIXEL_SCALE+8, 2*PIXEL_SCALE+8));
-                rect.setFillColor(sf::Color(110,110,110));               
+                rect.setFillColor(sf::Color(110,110,110));
                 rect.setPosition(sf::Vector2f(PIXEL_SCALE * (DISPLAY_COLUMNS + 4) - 32, j*(DISPLAY_ROWS)));
                 target.draw(rect);
                 color = sf::Color::White;
             }
             text.setFillColor(color);
-            
+
             text.setString(disasm.at(i));
             text.setCharacterSize(16);
             text.setPosition(sf::Vector2f(PIXEL_SCALE * (DISPLAY_COLUMNS + 4), j*(DISPLAY_ROWS)+8));
@@ -311,7 +307,7 @@ void Chip8::draw(sf::RenderTarget& target, sf::RenderStates states) const {
         }
 
         const auto print_register = [&](auto reg, auto reg_name, auto posx, auto posy) {
-            text.setString(fmt::format("{}: {} ({:#04x})", reg_name, reg, reg)); 
+            text.setString(fmt::format("{}: {} ({:#04x})", reg_name, reg, reg));
             text.setPosition(sf::Vector2f(PIXEL_SCALE * posx, PIXEL_SCALE * (DISPLAY_ROWS + posy)));
             target.draw(text);
         };

@@ -1,7 +1,3 @@
-//
-// Created by alireza on 5/30/20.
-//
-
 #ifndef EMUZE_CHIP8_H
 #define EMUZE_CHIP8_H
 
@@ -83,7 +79,7 @@ class Chip8 final : public EmulatorView {
     bool finished = true;
     bool debug = false;
     std::map<const int, std::string> disasm;
-    
+
 
    public:
     explicit Chip8();

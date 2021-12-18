@@ -1,7 +1,3 @@
-//
-// Created by alireza on 5/24/20.
-//
-
 #ifndef EMUZE_CHIP8DISASM_H
 #define EMUZE_CHIP8DISASM_H
 
