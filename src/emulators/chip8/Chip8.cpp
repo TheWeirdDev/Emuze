@@ -273,7 +273,7 @@ void Chip8::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     sf::Text text;
     text.setFillColor(sf::Color::Green);
     text.setFont(forward_font);
-    text.setString("[R] Reset\t[M] Main Menu\t[B] Debug");
+    text.setString("[R] Reset\t[M] Main Menu\t[B] Debug\t[L] Step");
     text.setCharacterSize(22);
     text.setPosition(sf::Vector2f(10, Emuze::SCREEN_HEIGHT - 30));
     target.draw(text);
@@ -325,7 +325,7 @@ void Chip8::draw(sf::RenderTarget& target, sf::RenderStates states) const {
         text.setFillColor(sf::Color(160,160,160));
         int counter = 0;
         for (const auto& i : V) {
-            print_register(i, fmt::format("V{}", counter), (counter % 4) * 16, 14 + (counter / 4) * 3);
+            print_register(i, fmt::format("V{:0X}", counter), (counter % 4) * 16 + 2, 14 + (counter / 4) * 3);
             counter++;
         }
     }
