@@ -24,28 +24,6 @@ std::string Disasm::disassemble(sf::Uint16 inst, std::size_t i) {
     if (inst == RET) {
         return fmt::format("{:04x}:\t\tRET", i);
     }
-    /*
-    if (inst == LOW) {
-        return fmt::format("{:04x}:\t\tLOW", i);
-    }
-    if (inst == HIGH) {
-        return fmt::format("{:04x}:\t\tHIGH", i);
-    }
-    if (inst == SCR) {
-        return fmt::format("{:04x}:\t\tSCR", i);
-    }
-    if (inst == SCL) {
-        return fmt::format("{:04x}:\t\tSCL", i);
-    }
-    if (inst == EXIT) {
-        return fmt::format("{:04x}:\t\tEXIT", i);
-    }
-    if ((inst & 0xFFF0) == 0x00B0) {
-        return fmt::format("{:04x}:\t\tSCU    {}", i, n);
-    }
-    if (((inst & 0xFFF0)) == 0x00C0) {
-        return fmt::format("{:04x}:\t\tSCD    {}", i, n);
-    }*/
     if ((inst & INST_F000) == SYS) {
         return fmt::format("{:04x}:\t\tSYS    #{}", i, a);
     }
@@ -163,12 +141,6 @@ std::string Disasm::disassemble(sf::Uint16 inst, std::size_t i) {
     if ((inst & INST_F0FF) == LD_V_MEMI) {
         return fmt::format("{:04x}:\t\tLD     V{:0X}, [I]", i, x);
     }
-    // if ((inst & INST_F0FF) == 0xF075) {
-    //     return fmt::format("{:04x}:\t\tLD     R, V{:0X}", i, x);
-    // }
-    // if ((inst & INST_F0FF) == 0xF085) {
-    //     return fmt::format("{:04x}:\t\tLD     V{:0X}, R", i, x);
-    // }
     if ((inst & INST_F0FF) == LD_AV) {
         return fmt::format("{:04x}:\t\tLD     A, V{:0X}", i, x);
     }
