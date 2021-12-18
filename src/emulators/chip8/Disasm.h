@@ -7,16 +7,15 @@
 
 #include <fmt/format.h>
 
+#include <SFML/Graphics/Drawable.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <array>
 #include <iostream>
 #include <string_view>
 
-#include "../../components/DisassemblyView.h"
 namespace Emuze::Chip8 {
 
-class Disasm final : public DisassemblyView {
-    void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+class Disasm {
 
    public:
     static std::string disassemble(sf::Uint16 inst, std::size_t i);

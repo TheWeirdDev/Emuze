@@ -6,12 +6,6 @@
 
 #include <SFML/Graphics.hpp>
 namespace Emuze::Chip8 {
-void Disasm::draw(sf::RenderTarget &target, sf::RenderStates states) const {
-    constexpr float size = 200.0F;
-    auto r = sf::RectangleShape(sf::Vector2f(size, size));
-    r.setFillColor(sf::Color::Blue);
-    target.draw(r, states);
-}
 
 std::string Disasm::disassemble(sf::Uint16 inst, std::size_t i) {
     using sf::Uint8, sf::Uint16;
@@ -66,64 +60,64 @@ std::string Disasm::disassemble(sf::Uint16 inst, std::size_t i) {
         return fmt::format("{:04x}:\t\tCALL   #{:04x}", i, a);
     }
     if ((inst & INST_F000) == SE_VX) {
-        return fmt::format("{:04x}:\t\tSE     V{}, #{}", i, x, b);
+        return fmt::format("{:04x}:\t\tSE     V{:0X}, #{}", i, x, b);
     }
     if ((inst & INST_F000) == SNE_VX) {
-        return fmt::format("{:04x}:\t\tSNE    V{}, #{}", i, x, b);
+        return fmt::format("{:04x}:\t\tSNE    V{:0X}, #{}", i, x, b);
     }
     if ((inst & INST_F00F) == SE_VV) {
-        return fmt::format("{:04x}:\t\tSE     V{}, V{}", i, x, y);
+        return fmt::format("{:04x}:\t\tSE     V{:0X}, V{:0X}", i, x, y);
     }
     if ((inst & INST_F00F) == SGT) {
-        return fmt::format("{:04x}:\t\tSGT    V{}, V{}", i, x, y);
+        return fmt::format("{:04x}:\t\tSGT    V{:0X}, V{:0X}", i, x, y);
     }
     if ((inst & INST_F00F) == SLT) {
-        return fmt::format("{:04x}:\t\tSLT    V{}, V{}", i, x, y);
+        return fmt::format("{:04x}:\t\tSLT    V{:0X}, V{:0X}", i, x, y);
     }
     if ((inst & INST_F000) == LD_VX) {
-        return fmt::format("{:04x}:\t\tLD     V{}, #{}", i, x, b);
+        return fmt::format("{:04x}:\t\tLD     V{:0X}, #{}", i, x, b);
     }
     if ((inst & INST_F000) == ADD_VX) {
-        return fmt::format("{:04x}:\t\tADD    V{}, #{}", i, x, b);
+        return fmt::format("{:04x}:\t\tADD    V{:0X}, #{}", i, x, b);
     }
     if ((inst & INST_F00F) == LD_VV) {
-        return fmt::format("{:04x}:\t\tLD     V{}, V{}", i, x, y);
+        return fmt::format("{:04x}:\t\tLD     V{:0X}, V{:0X}", i, x, y);
     }
     if ((inst & INST_F00F) == OR) {
-        return fmt::format("{:04x}:\t\tOR     V{}, V{}", i, x, y);
+        return fmt::format("{:04x}:\t\tOR     V{:0X}, V{:0X}", i, x, y);
     }
     if ((inst & INST_F00F) == AND) {
-        return fmt::format("{:04x}:\t\tAND    V{}, V{}", i, x, y);
+        return fmt::format("{:04x}:\t\tAND    V{:0X}, V{:0X}", i, x, y);
     }
     if ((inst & INST_F00F) == XOR) {
-        return fmt::format("{:04x}:\t\tXOR    V{}, V{}", i, x, y);
+        return fmt::format("{:04x}:\t\tXOR    V{:0X}, V{:0X}", i, x, y);
     }
     if ((inst & INST_F00F) == ADD_VV) {
-        return fmt::format("{:04x}:\t\tADD    V{}, V{}", i, x, y);
+        return fmt::format("{:04x}:\t\tADD    V{:0X}, V{:0X}", i, x, y);
     }
     if ((inst & INST_F00F) == SUB) {
-        return fmt::format("{:04x}:\t\tSUB    V{}, V{}", i, x, y);
+        return fmt::format("{:04x}:\t\tSUB    V{:0X}, V{:0X}", i, x, y);
     }
     if ((inst & INST_F00F) == SHR) {
-        return fmt::format("{:04x}:\t\tSHR    V{}", i, x);
+        return fmt::format("{:04x}:\t\tSHR    V{:0X}", i, x);
     }
     if ((inst & INST_F00F) == SUBN) {
-        return fmt::format("{:04x}:\t\tSUBN   V{}, V{}", i, x, y);
+        return fmt::format("{:04x}:\t\tSUBN   V{:0X}, V{:0X}", i, x, y);
     }
     if ((inst & INST_F00F) == SHL) {
-        return fmt::format("{:04x}:\t\tSHL    V{}", i, x);
+        return fmt::format("{:04x}:\t\tSHL    V{:0X}", i, x);
     }
     if ((inst & INST_F00F) == SNE_VV) {
-        return fmt::format("{:04x}:\t\tSNE    V{}, V{}", i, x, y);
+        return fmt::format("{:04x}:\t\tSNE    V{:0X}, V{:0X}", i, x, y);
     }
     if ((inst & INST_F00F) == MUL) {
-        return fmt::format("{:04x}:\t\tMUL    V{}, V{}", i, x, y);
+        return fmt::format("{:04x}:\t\tMUL    V{:0X}, V{:0X}", i, x, y);
     }
     if ((inst & INST_F00F) == DIV) {
-        return fmt::format("{:04x}:\t\tDIV    V{}, V{}", i, x, y);
+        return fmt::format("{:04x}:\t\tDIV    V{:0X}, V{:0X}", i, x, y);
     }
     if ((inst & INST_F00F) == BCD_VV) {
-        return fmt::format("{:04x}:\t\tBCD    V{}, V{}", i, x, y);
+        return fmt::format("{:04x}:\t\tBCD    V{:0X}, V{:0X}", i, x, y);
     }
     if ((inst & INST_F000) == LD_IX) {
         return fmt::format("{:04x}:\t\tLD     I, #{}", i, a);
@@ -132,55 +126,55 @@ std::string Disasm::disassemble(sf::Uint16 inst, std::size_t i) {
         return fmt::format("{:04x}:\t\tJP     V0, #{}", i, a);
     }
     if ((inst & INST_F000) == RND) {
-        return fmt::format("{:04x}:\t\tRND    V{}, #{}", i, x, b);
+        return fmt::format("{:04x}:\t\tRND    V{:0X}, #{}", i, x, b);
     }
     if ((inst & INST_F000) == DRW) {
-        return fmt::format("{:04x}:\t\tDRW    V{}, V{}, {}", i, x, y, n);
+        return fmt::format("{:04x}:\t\tDRW    V{:0X}, V{:0X}, {}", i, x, y, n);
     }
     if ((inst & INST_F0FF) == SKP) {
-        return fmt::format("{:04x}:\t\tSKP    V{}", i, x);
+        return fmt::format("{:04x}:\t\tSKP    V{:0X}", i, x);
     }
     if ((inst & INST_F0FF) == SKNP) {
-        return fmt::format("{:04x}:\t\tSKNP   V{}", i, x);
+        return fmt::format("{:04x}:\t\tSKNP   V{:0X}", i, x);
     }
     if ((inst & INST_F0FF) == LD_VDT) {
-        return fmt::format("{:04x}:\t\tLD     V{}, DT", i, x);
+        return fmt::format("{:04x}:\t\tLD     V{:0X}, DT", i, x);
     }
     if ((inst & INST_F0FF) == LD_VK) {
-        return fmt::format("{:04x}:\t\tLD     V{}, K", i, x);
+        return fmt::format("{:04x}:\t\tLD     V{:0X}, K", i, x);
     }
     if ((inst & INST_F0FF) == LD_DTV) {
-        return fmt::format("{:04x}:\t\tLD     DT, V{}", i, x);
+        return fmt::format("{:04x}:\t\tLD     DT, V{:0X}", i, x);
     }
     if ((inst & INST_F0FF) == LD_STV) {
-        return fmt::format("{:04x}:\t\tLD     ST, V{}", i, x);
+        return fmt::format("{:04x}:\t\tLD     ST, V{:0X}", i, x);
     }
     if ((inst & INST_F0FF) == ADD_IV) {
-        return fmt::format("{:04x}:\t\tADD    I, V{}", i, x);
+        return fmt::format("{:04x}:\t\tADD    I, V{:0X}", i, x);
     }
     if ((inst & INST_F0FF) == LD_FV) {
-        return fmt::format("{:04x}:\t\tLD     F, V{}", i, x);
+        return fmt::format("{:04x}:\t\tLD     F, V{:0X}", i, x);
     }
     // if ((inst & INST_F0FF) == 0xF030) {
-    //     return fmt::format("{:04x}:\t\tLD     HF, V{}", i, x);
+    //     return fmt::format("{:04x}:\t\tLD     HF, V{:0X}", i, x);
     // }
     if ((inst & INST_F0FF) == BCD_V) {
-        return fmt::format("{:04x}:\t\tBCD    V{}", i, x);
+        return fmt::format("{:04x}:\t\tBCD    V{:0X}", i, x);
     }
     if ((inst & INST_F0FF) == LD_MEMI_V) {
-        return fmt::format("{:04x}:\t\tLD     [I], V{}", i, x);
+        return fmt::format("{:04x}:\t\tLD     [I], V{:0X}", i, x);
     }
     if ((inst & INST_F0FF) == LD_V_MEMI) {
-        return fmt::format("{:04x}:\t\tLD     V{}, [I]", i, x);
+        return fmt::format("{:04x}:\t\tLD     V{:0X}, [I]", i, x);
     }
     // if ((inst & INST_F0FF) == 0xF075) {
-    //     return fmt::format("{:04x}:\t\tLD     R, V{}", i, x);
+    //     return fmt::format("{:04x}:\t\tLD     R, V{:0X}", i, x);
     // }
     // if ((inst & INST_F0FF) == 0xF085) {
-    //     return fmt::format("{:04x}:\t\tLD     V{}, R", i, x);
+    //     return fmt::format("{:04x}:\t\tLD     V{:0X}, R", i, x);
     // }
     if ((inst & INST_F0FF) == LD_AV) {
-        return fmt::format("{:04x}:\t\tLD     A, V{}", i, x);
+        return fmt::format("{:04x}:\t\tLD     A, V{:0X}", i, x);
     }
     return fmt::format("{:04x} INVALID", i);
 }
